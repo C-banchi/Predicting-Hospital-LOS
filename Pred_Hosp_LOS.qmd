@@ -1,0 +1,106 @@
+---
+title: "Predicting Hospital LOS" 
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library("tidyverse")
+library(janitor)
+library(skimr)
+library(ggplot2)
+library(lubridate)
+library(caret)
+```
+
+You can add options to executable code like this
+
+```{r}
+
+Hs_data <- read.csv(file = " [File Path to Data Set] ")
+```
+
+```{r}
+skim(Hs_data) 
+```
+
+```{r}
+# doing a quick check on the values
+
+Hs_data |>
+ select(Length.of.Stay) |>
+  distinct() |>
+  arrange(Length.of.Stay)
+```
+
+```{r}
+# remove the 120 + and convert
+Hs_data <- Hs_data |>
+  mutate(
+    
+    Length.of.Stay = as.numeric(str_remove(Length.of.Stay, "\\+"))
+  )
+```
+
+```{r}
+# Skim showed 89 empty in these columns
+Hs_data |> 
+   filter(
+    APR.Severity.of.Illness.Description == "" |
+    APR.Risk.of.Mortality == ""
+  )
+```
+
+### Covert Data Types
+
+```{r}
+
+# convert the LOS  char -> dbl
+Hs_data <-
+  Hs_data |>
+  mutate(
+    Length.of.Stay = as.numeric(Length.of.Stay)
+   )
+
+  
+```
+
+```{r}
+# Convert the Categorical data to a Factor
+Hs_data <- Hs_data |>
+  mutate(
+    across(
+      c(Age.Group, Gender, Race, Ethnicity, Type.of.Admission,
+        Emergency.Department.Indicator, Patient.Disposition,
+        APR.Severity.of.Illness.Description, APR.Risk.of.Mortality,
+        APR.Medical.Surgical.Description, APR.DRG.Description,
+        CCS.Diagnosis.Description, Facility.Name, Hospital.County,
+        Payment.Typology.1),
+      
+        as.factor
+      )
+    )
+
+```
+
+```{r}
+# Checking the changes 
+```
+
+```{r}
+ggplot(Hs_data, aes(x = Length.of.Stay)) +
+  geom_histogram(bins = 50, fill = "steelblue") +
+  coord_cartesian(xlim = c(0, 30)) +
+  labs(title = "Length of Stay Distribution")
+
+```
+
+`{skim(Hs_data)}`
