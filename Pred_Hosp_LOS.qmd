@@ -84,24 +84,13 @@ Hs_data <- Hs_data |>
         APR.Medical.Surgical.Description, APR.DRG.Description,
         CCS.Diagnosis.Description, Facility.Name, Hospital.County,
         Payment.Typology.1),
-      
+    
         as.factor
       )
     )
 
 ```
 
-```{r}
-# Checking the changes 
-```
-
-```{r}
-ggplot(Hs_data, aes(x = Length.of.Stay)) +
-  geom_histogram(bins = 50, fill = "steelblue") +
-  coord_cartesian(xlim = c(0, 30)) +
-  labs(title = "Length of Stay Distribution")
-
-```
 
 ```{r}
 Hs_data <- 
@@ -131,6 +120,8 @@ Hs_data <-
   )))
 ```
 
+# Graphs and Analysis
+
 ```{r}
     ggplot(Hs_data, aes(x = LOS_Group)) +
   geom_bar(fill = "steelblue") +
@@ -143,10 +134,114 @@ Hs_data <-
 ```
 
 ```{r}
+ggplot(Hs_data, aes(x = Length.of.Stay)) +
+  geom_histogram(bins = 50, fill = "steelblue") +
+  coord_cartesian(xlim = c(0, 30)) +
+  labs(title = "Length of Stay Distribution")
+```
+
+```{r}
+
+ggplot(Hs_data, aes(x = LOS_Group, fill = Gender)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "LOS Group Breakdown by Gender")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+
+ggplot(Hs_data, aes(x = Age.Group, fill = LOS_Group)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Proportion of LOS Groups by Age Group",
+    x = "Age Group",
+    y = "Percentage"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+ggplot(Hs_data, aes(x = Length.of.Stay)) +
+  geom_histogram(bins = 50, fill = "steelblue") +
+  coord_cartesian(xlim = c(0, 30)) +
+  labs(title = "Length of Stay Distribution")
+```
+
+```{r}
+
 Hs_data |>
-  group_by(LOS_Group) |>
+  group_by(Age.Group) |>
   summarise(
     groupCount = n()
   )
 
+```
+
+```{r}
+
+Hs_data |>
+  select(Type.of.Admission, LOS_Group, Length.of.Stay) |>
+   group_by(Type.of.Admission) |>
+  summarise(
+    count = n(),
+    average_Stay = round(mean(Length.of.Stay, na.rm = TRUE),2),
+    median_Stay = median(Length.of.Stay)
+  )  |>
+  mutate(
+    proportion_Of_Stay = round(count / sum(count), 3) * 100
+  ) |>
+  arrange(desc(average_Stay))
+```
+
+```{r}
+
+Hs_data |>
+  select(Race, LOS_Group, Length.of.Stay) |>
+   group_by(Race) |>
+  summarise(
+    count = n(),
+    average_Stay = round(mean(Length.of.Stay, na.rm = TRUE),2),
+    median_Stay = median(Length.of.Stay)
+  )  |>
+  mutate(
+    proportion_Of_Stay = round(count / sum(count), 3) * 100
+  ) |>
+  arrange(desc(average_Stay))
+```
+
+```{r}
+Hs_data |>
+  select(Gender, LOS_Group, Length.of.Stay) |>
+   group_by(Gender) |>
+  summarise(
+    count = n(),
+    average_Stay = round(mean(Length.of.Stay, na.rm = TRUE),2),
+    median_Stay = median(Length.of.Stay)
+  )  |>
+  mutate(
+    proportion_Of_Stay = round(count / sum(count), 3) * 100
+  ) |>
+  arrange(desc(average_Stay))
+```
+
+```{r}
+
+Hs_data |>
+  select(Patient.Disposition, LOS_Group, Length.of.Stay) |>
+   group_by(Patient.Disposition) |>
+  summarise(
+    count = n(),
+    average_Stay = round(mean(Length.of.Stay, na.rm = TRUE),2),
+    median_Stay = median(Length.of.Stay)
+  )  |>
+  mutate(
+    proportion_Of_Stay = round(count / sum(count), 3) * 100
+  ) |>
+  arrange(desc(average_Stay))
 ```
